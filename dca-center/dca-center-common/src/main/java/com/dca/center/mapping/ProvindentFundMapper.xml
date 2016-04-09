@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dca.center.dao.ProvindentFundMapper" >
+  <resultMap id="BaseResultMap" type="com.dca.center.model.ProvindentFund" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="userId" property="userid" jdbcType="BIGINT" />
+    <result column="userName" property="username" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="VARCHAR" />
+    <result column="company" property="company" jdbcType="VARCHAR" />
+    <result column="id_card" property="idCard" jdbcType="VARCHAR" />
+    <result column="fund_account" property="fundAccount" jdbcType="VARCHAR" />
+    <result column="balance" property="balance" jdbcType="DECIMAL" />
+    <result column="open_bank_name" property="openBankName" jdbcType="VARCHAR" />
+    <result column="open_bank_account" property="openBankAccount" jdbcType="VARCHAR" />
+    <result column="createTime" property="createtime" jdbcType="TIMESTAMP" />
+    <result column="updateTime" property="updatetime" jdbcType="TIMESTAMP" />
+    <result column="modifyTime" property="modifytime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.dca.center.model.ProvindentFund" extends="BaseResultMap" >
+    <result column="data" property="data" jdbcType="LONGVARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, userId, userName, status, company, id_card, fund_account, balance, open_bank_name, 
+    open_bank_account, createTime, updateTime, modifyTime
+  </sql>
+  <sql id="Blob_Column_List" >
+    data
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from provindent_fund_data
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from provindent_fund_data
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.dca.center.model.ProvindentFund" >
+    insert into provindent_fund_data (id, userId, userName, 
+      status, company, id_card, 
+      fund_account, balance, open_bank_name, 
+      open_bank_account, createTime, updateTime, 
+      modifyTime, data)
+    values (#{id,jdbcType=BIGINT}, #{userid,jdbcType=BIGINT}, #{username,jdbcType=VARCHAR}, 
+      #{status,jdbcType=VARCHAR}, #{company,jdbcType=VARCHAR}, #{idCard,jdbcType=VARCHAR}, 
+      #{fundAccount,jdbcType=VARCHAR}, #{balance,jdbcType=DECIMAL}, #{openBankName,jdbcType=VARCHAR}, 
+      #{openBankAccount,jdbcType=VARCHAR}, #{createtime,jdbcType=TIMESTAMP}, #{updatetime,jdbcType=TIMESTAMP}, 
+      #{modifytime,jdbcType=TIMESTAMP}, #{data,jdbcType=LONGVARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.dca.center.model.ProvindentFund" >
+    insert into provindent_fund_data
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="userid != null" >
+        userId,
+      </if>
+      <if test="username != null" >
+        userName,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="company != null" >
+        company,
+      </if>
+      <if test="idCard != null" >
+        id_card,
+      </if>
+      <if test="fundAccount != null" >
+        fund_account,
+      </if>
+      <if test="balance != null" >
+        balance,
+      </if>
+      <if test="openBankName != null" >
+        open_bank_name,
+      </if>
+      <if test="openBankAccount != null" >
+        open_bank_account,
+      </if>
+      <if test="createtime != null" >
+        createTime,
+      </if>
+      <if test="updatetime != null" >
+        updateTime,
+      </if>
+      <if test="modifytime != null" >
+        modifyTime,
+      </if>
+      <if test="data != null" >
+        data,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="userid != null" >
+        #{userid,jdbcType=BIGINT},
+      </if>
+      <if test="username != null" >
+        #{username,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="company != null" >
+        #{company,jdbcType=VARCHAR},
+      </if>
+      <if test="idCard != null" >
+        #{idCard,jdbcType=VARCHAR},
+      </if>
+      <if test="fundAccount != null" >
+        #{fundAccount,jdbcType=VARCHAR},
+      </if>
+      <if test="balance != null" >
+        #{balance,jdbcType=DECIMAL},
+      </if>
+      <if test="openBankName != null" >
+        #{openBankName,jdbcType=VARCHAR},
+      </if>
+      <if test="openBankAccount != null" >
+        #{openBankAccount,jdbcType=VARCHAR},
+      </if>
+      <if test="createtime != null" >
+        #{createtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatetime != null" >
+        #{updatetime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="modifytime != null" >
+        #{modifytime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="data != null" >
+        #{data,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.dca.center.model.ProvindentFund" >
+    update provindent_fund_data
+    <set >
+      <if test="userid != null" >
+        userId = #{userid,jdbcType=BIGINT},
+      </if>
+      <if test="username != null" >
+        userName = #{username,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="company != null" >
+        company = #{company,jdbcType=VARCHAR},
+      </if>
+      <if test="idCard != null" >
+        id_card = #{idCard,jdbcType=VARCHAR},
+      </if>
+      <if test="fundAccount != null" >
+        fund_account = #{fundAccount,jdbcType=VARCHAR},
+      </if>
+      <if test="balance != null" >
+        balance = #{balance,jdbcType=DECIMAL},
+      </if>
+      <if test="openBankName != null" >
+        open_bank_name = #{openBankName,jdbcType=VARCHAR},
+      </if>
+      <if test="openBankAccount != null" >
+        open_bank_account = #{openBankAccount,jdbcType=VARCHAR},
+      </if>
+      <if test="createtime != null" >
+        createTime = #{createtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatetime != null" >
+        updateTime = #{updatetime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="modifytime != null" >
+        modifyTime = #{modifytime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="data != null" >
+        data = #{data,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.dca.center.model.ProvindentFund" >
+    update provindent_fund_data
+    set userId = #{userid,jdbcType=BIGINT},
+      userName = #{username,jdbcType=VARCHAR},
+      status = #{status,jdbcType=VARCHAR},
+      company = #{company,jdbcType=VARCHAR},
+      id_card = #{idCard,jdbcType=VARCHAR},
+      fund_account = #{fundAccount,jdbcType=VARCHAR},
+      balance = #{balance,jdbcType=DECIMAL},
+      open_bank_name = #{openBankName,jdbcType=VARCHAR},
+      open_bank_account = #{openBankAccount,jdbcType=VARCHAR},
+      createTime = #{createtime,jdbcType=TIMESTAMP},
+      updateTime = #{updatetime,jdbcType=TIMESTAMP},
+      modifyTime = #{modifytime,jdbcType=TIMESTAMP},
+      data = #{data,jdbcType=LONGVARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.dca.center.model.ProvindentFund" >
+    update provindent_fund_data
+    set userId = #{userid,jdbcType=BIGINT},
+      userName = #{username,jdbcType=VARCHAR},
+      status = #{status,jdbcType=VARCHAR},
+      company = #{company,jdbcType=VARCHAR},
+      id_card = #{idCard,jdbcType=VARCHAR},
+      fund_account = #{fundAccount,jdbcType=VARCHAR},
+      balance = #{balance,jdbcType=DECIMAL},
+      open_bank_name = #{openBankName,jdbcType=VARCHAR},
+      open_bank_account = #{openBankAccount,jdbcType=VARCHAR},
+      createTime = #{createtime,jdbcType=TIMESTAMP},
+      updateTime = #{updatetime,jdbcType=TIMESTAMP},
+      modifyTime = #{modifytime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

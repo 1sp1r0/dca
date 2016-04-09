@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dca.center.dao.ResourceTypeMapper" >
+  <resultMap id="BaseResultMap" type="com.dca.center.model.ResourceType" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="res_name" property="resName" jdbcType="VARCHAR" />
+    <result column="res_short" property="resShort" jdbcType="VARCHAR" />
+    <result column="res_sign" property="resSign" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, res_name, res_short, res_sign
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from resource_type
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from resource_type
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.dca.center.model.ResourceType" >
+    insert into resource_type (id, res_name, res_short, 
+      res_sign)
+    values (#{id,jdbcType=BIGINT}, #{resName,jdbcType=VARCHAR}, #{resShort,jdbcType=VARCHAR}, 
+      #{resSign,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.dca.center.model.ResourceType" >
+    insert into resource_type
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="resName != null" >
+        res_name,
+      </if>
+      <if test="resShort != null" >
+        res_short,
+      </if>
+      <if test="resSign != null" >
+        res_sign,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="resName != null" >
+        #{resName,jdbcType=VARCHAR},
+      </if>
+      <if test="resShort != null" >
+        #{resShort,jdbcType=VARCHAR},
+      </if>
+      <if test="resSign != null" >
+        #{resSign,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.dca.center.model.ResourceType" >
+    update resource_type
+    <set >
+      <if test="resName != null" >
+        res_name = #{resName,jdbcType=VARCHAR},
+      </if>
+      <if test="resShort != null" >
+        res_short = #{resShort,jdbcType=VARCHAR},
+      </if>
+      <if test="resSign != null" >
+        res_sign = #{resSign,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.dca.center.model.ResourceType" >
+    update resource_type
+    set res_name = #{resName,jdbcType=VARCHAR},
+      res_short = #{resShort,jdbcType=VARCHAR},
+      res_sign = #{resSign,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

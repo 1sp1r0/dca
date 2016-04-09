@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dca.center.dao.CrawlersLogMapper" >
+  <resultMap id="BaseResultMap" type="com.dca.center.model.CrawlersLog" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="userId" property="userid" jdbcType="BIGINT" />
+    <result column="accountId" property="accountid" jdbcType="BIGINT" />
+    <result column="res_sign" property="resSign" jdbcType="VARCHAR" />
+    <result column="loginStatus" property="loginstatus" jdbcType="VARCHAR" />
+    <result column="loginErrorMessage" property="loginerrormessage" jdbcType="VARCHAR" />
+    <result column="crawlerStatus" property="crawlerstatus" jdbcType="VARCHAR" />
+    <result column="crawlerErrorMessage" property="crawlererrormessage" jdbcType="VARCHAR" />
+    <result column="createTime" property="createtime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, userId, accountId, res_sign, loginStatus, loginErrorMessage, crawlerStatus, crawlerErrorMessage, 
+    createTime
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from crawlers_log
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from crawlers_log
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.dca.center.model.CrawlersLog" >
+    insert into crawlers_log (id, userId, accountId, 
+      res_sign, loginStatus, loginErrorMessage, 
+      crawlerStatus, crawlerErrorMessage, createTime
+      )
+    values (#{id,jdbcType=BIGINT}, #{userid,jdbcType=BIGINT}, #{accountid,jdbcType=BIGINT}, 
+      #{resSign,jdbcType=VARCHAR}, #{loginstatus,jdbcType=VARCHAR}, #{loginerrormessage,jdbcType=VARCHAR}, 
+      #{crawlerstatus,jdbcType=VARCHAR}, #{crawlererrormessage,jdbcType=VARCHAR}, #{createtime,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.dca.center.model.CrawlersLog" >
+    insert into crawlers_log
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="userid != null" >
+        userId,
+      </if>
+      <if test="accountid != null" >
+        accountId,
+      </if>
+      <if test="resSign != null" >
+        res_sign,
+      </if>
+      <if test="loginstatus != null" >
+        loginStatus,
+      </if>
+      <if test="loginerrormessage != null" >
+        loginErrorMessage,
+      </if>
+      <if test="crawlerstatus != null" >
+        crawlerStatus,
+      </if>
+      <if test="crawlererrormessage != null" >
+        crawlerErrorMessage,
+      </if>
+      <if test="createtime != null" >
+        createTime,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="userid != null" >
+        #{userid,jdbcType=BIGINT},
+      </if>
+      <if test="accountid != null" >
+        #{accountid,jdbcType=BIGINT},
+      </if>
+      <if test="resSign != null" >
+        #{resSign,jdbcType=VARCHAR},
+      </if>
+      <if test="loginstatus != null" >
+        #{loginstatus,jdbcType=VARCHAR},
+      </if>
+      <if test="loginerrormessage != null" >
+        #{loginerrormessage,jdbcType=VARCHAR},
+      </if>
+      <if test="crawlerstatus != null" >
+        #{crawlerstatus,jdbcType=VARCHAR},
+      </if>
+      <if test="crawlererrormessage != null" >
+        #{crawlererrormessage,jdbcType=VARCHAR},
+      </if>
+      <if test="createtime != null" >
+        #{createtime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.dca.center.model.CrawlersLog" >
+    update crawlers_log
+    <set >
+      <if test="userid != null" >
+        userId = #{userid,jdbcType=BIGINT},
+      </if>
+      <if test="accountid != null" >
+        accountId = #{accountid,jdbcType=BIGINT},
+      </if>
+      <if test="resSign != null" >
+        res_sign = #{resSign,jdbcType=VARCHAR},
+      </if>
+      <if test="loginstatus != null" >
+        loginStatus = #{loginstatus,jdbcType=VARCHAR},
+      </if>
+      <if test="loginerrormessage != null" >
+        loginErrorMessage = #{loginerrormessage,jdbcType=VARCHAR},
+      </if>
+      <if test="crawlerstatus != null" >
+        crawlerStatus = #{crawlerstatus,jdbcType=VARCHAR},
+      </if>
+      <if test="crawlererrormessage != null" >
+        crawlerErrorMessage = #{crawlererrormessage,jdbcType=VARCHAR},
+      </if>
+      <if test="createtime != null" >
+        createTime = #{createtime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.dca.center.model.CrawlersLog" >
+    update crawlers_log
+    set userId = #{userid,jdbcType=BIGINT},
+      accountId = #{accountid,jdbcType=BIGINT},
+      res_sign = #{resSign,jdbcType=VARCHAR},
+      loginStatus = #{loginstatus,jdbcType=VARCHAR},
+      loginErrorMessage = #{loginerrormessage,jdbcType=VARCHAR},
+      crawlerStatus = #{crawlerstatus,jdbcType=VARCHAR},
+      crawlerErrorMessage = #{crawlererrormessage,jdbcType=VARCHAR},
+      createTime = #{createtime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

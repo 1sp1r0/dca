@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dca.center.dao.AccountsMapper" >
+  <resultMap id="BaseResultMap" type="com.dca.center.model.Accounts" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="userId" property="userid" jdbcType="BIGINT" />
+    <result column="jd_account" property="jdAccount" jdbcType="VARCHAR" />
+    <result column="jd_pwd" property="jdPwd" jdbcType="VARCHAR" />
+    <result column="tb_account" property="tbAccount" jdbcType="VARCHAR" />
+    <result column="tb_pwd" property="tbPwd" jdbcType="VARCHAR" />
+    <result column="telephone" property="telephone" jdbcType="VARCHAR" />
+    <result column="telephone_pwd" property="telephonePwd" jdbcType="VARCHAR" />
+    <result column="provindentfund_account" property="provindentfundAccount" jdbcType="VARCHAR" />
+    <result column="provindentfund_pwd" property="provindentfundPwd" jdbcType="VARCHAR" />
+    <result column="social_insurance_account" property="socialInsuranceAccount" jdbcType="VARCHAR" />
+    <result column="social_insurance_pwd" property="socialInsurancePwd" jdbcType="VARCHAR" />
+    <result column="createTime" property="createtime" jdbcType="TIMESTAMP" />
+    <result column="updateTime" property="updatetime" jdbcType="TIMESTAMP" />
+    <result column="modifyTime" property="modifytime" jdbcType="TIMESTAMP" />
+    <result column="delstatus" property="delstatus" jdbcType="BIT" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, userId, jd_account, jd_pwd, tb_account, tb_pwd, telephone, telephone_pwd, provindentfund_account, 
+    provindentfund_pwd, social_insurance_account, social_insurance_pwd, createTime, updateTime, 
+    modifyTime, delstatus
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from accounts
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from accounts
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.dca.center.model.Accounts" >
+    insert into accounts (id, userId, jd_account, 
+      jd_pwd, tb_account, tb_pwd, 
+      telephone, telephone_pwd, provindentfund_account, 
+      provindentfund_pwd, social_insurance_account, 
+      social_insurance_pwd, createTime, updateTime, 
+      modifyTime, delstatus)
+    values (#{id,jdbcType=BIGINT}, #{userid,jdbcType=BIGINT}, #{jdAccount,jdbcType=VARCHAR}, 
+      #{jdPwd,jdbcType=VARCHAR}, #{tbAccount,jdbcType=VARCHAR}, #{tbPwd,jdbcType=VARCHAR}, 
+      #{telephone,jdbcType=VARCHAR}, #{telephonePwd,jdbcType=VARCHAR}, #{provindentfundAccount,jdbcType=VARCHAR}, 
+      #{provindentfundPwd,jdbcType=VARCHAR}, #{socialInsuranceAccount,jdbcType=VARCHAR}, 
+      #{socialInsurancePwd,jdbcType=VARCHAR}, #{createtime,jdbcType=TIMESTAMP}, #{updatetime,jdbcType=TIMESTAMP}, 
+      #{modifytime,jdbcType=TIMESTAMP}, #{delstatus,jdbcType=BIT})
+  </insert>
+  <insert id="insertSelective" parameterType="com.dca.center.model.Accounts" >
+    insert into accounts
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="userid != null" >
+        userId,
+      </if>
+      <if test="jdAccount != null" >
+        jd_account,
+      </if>
+      <if test="jdPwd != null" >
+        jd_pwd,
+      </if>
+      <if test="tbAccount != null" >
+        tb_account,
+      </if>
+      <if test="tbPwd != null" >
+        tb_pwd,
+      </if>
+      <if test="telephone != null" >
+        telephone,
+      </if>
+      <if test="telephonePwd != null" >
+        telephone_pwd,
+      </if>
+      <if test="provindentfundAccount != null" >
+        provindentfund_account,
+      </if>
+      <if test="provindentfundPwd != null" >
+        provindentfund_pwd,
+      </if>
+      <if test="socialInsuranceAccount != null" >
+        social_insurance_account,
+      </if>
+      <if test="socialInsurancePwd != null" >
+        social_insurance_pwd,
+      </if>
+      <if test="createtime != null" >
+        createTime,
+      </if>
+      <if test="updatetime != null" >
+        updateTime,
+      </if>
+      <if test="modifytime != null" >
+        modifyTime,
+      </if>
+      <if test="delstatus != null" >
+        delstatus,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="userid != null" >
+        #{userid,jdbcType=BIGINT},
+      </if>
+      <if test="jdAccount != null" >
+        #{jdAccount,jdbcType=VARCHAR},
+      </if>
+      <if test="jdPwd != null" >
+        #{jdPwd,jdbcType=VARCHAR},
+      </if>
+      <if test="tbAccount != null" >
+        #{tbAccount,jdbcType=VARCHAR},
+      </if>
+      <if test="tbPwd != null" >
+        #{tbPwd,jdbcType=VARCHAR},
+      </if>
+      <if test="telephone != null" >
+        #{telephone,jdbcType=VARCHAR},
+      </if>
+      <if test="telephonePwd != null" >
+        #{telephonePwd,jdbcType=VARCHAR},
+      </if>
+      <if test="provindentfundAccount != null" >
+        #{provindentfundAccount,jdbcType=VARCHAR},
+      </if>
+      <if test="provindentfundPwd != null" >
+        #{provindentfundPwd,jdbcType=VARCHAR},
+      </if>
+      <if test="socialInsuranceAccount != null" >
+        #{socialInsuranceAccount,jdbcType=VARCHAR},
+      </if>
+      <if test="socialInsurancePwd != null" >
+        #{socialInsurancePwd,jdbcType=VARCHAR},
+      </if>
+      <if test="createtime != null" >
+        #{createtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatetime != null" >
+        #{updatetime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="modifytime != null" >
+        #{modifytime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="delstatus != null" >
+        #{delstatus,jdbcType=BIT},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.dca.center.model.Accounts" >
+    update accounts
+    <set >
+      <if test="userid != null" >
+        userId = #{userid,jdbcType=BIGINT},
+      </if>
+      <if test="jdAccount != null" >
+        jd_account = #{jdAccount,jdbcType=VARCHAR},
+      </if>
+      <if test="jdPwd != null" >
+        jd_pwd = #{jdPwd,jdbcType=VARCHAR},
+      </if>
+      <if test="tbAccount != null" >
+        tb_account = #{tbAccount,jdbcType=VARCHAR},
+      </if>
+      <if test="tbPwd != null" >
+        tb_pwd = #{tbPwd,jdbcType=VARCHAR},
+      </if>
+      <if test="telephone != null" >
+        telephone = #{telephone,jdbcType=VARCHAR},
+      </if>
+      <if test="telephonePwd != null" >
+        telephone_pwd = #{telephonePwd,jdbcType=VARCHAR},
+      </if>
+      <if test="provindentfundAccount != null" >
+        provindentfund_account = #{provindentfundAccount,jdbcType=VARCHAR},
+      </if>
+      <if test="provindentfundPwd != null" >
+        provindentfund_pwd = #{provindentfundPwd,jdbcType=VARCHAR},
+      </if>
+      <if test="socialInsuranceAccount != null" >
+        social_insurance_account = #{socialInsuranceAccount,jdbcType=VARCHAR},
+      </if>
+      <if test="socialInsurancePwd != null" >
+        social_insurance_pwd = #{socialInsurancePwd,jdbcType=VARCHAR},
+      </if>
+      <if test="createtime != null" >
+        createTime = #{createtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatetime != null" >
+        updateTime = #{updatetime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="modifytime != null" >
+        modifyTime = #{modifytime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="delstatus != null" >
+        delstatus = #{delstatus,jdbcType=BIT},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.dca.center.model.Accounts" >
+    update accounts
+    set userId = #{userid,jdbcType=BIGINT},
+      jd_account = #{jdAccount,jdbcType=VARCHAR},
+      jd_pwd = #{jdPwd,jdbcType=VARCHAR},
+      tb_account = #{tbAccount,jdbcType=VARCHAR},
+      tb_pwd = #{tbPwd,jdbcType=VARCHAR},
+      telephone = #{telephone,jdbcType=VARCHAR},
+      telephone_pwd = #{telephonePwd,jdbcType=VARCHAR},
+      provindentfund_account = #{provindentfundAccount,jdbcType=VARCHAR},
+      provindentfund_pwd = #{provindentfundPwd,jdbcType=VARCHAR},
+      social_insurance_account = #{socialInsuranceAccount,jdbcType=VARCHAR},
+      social_insurance_pwd = #{socialInsurancePwd,jdbcType=VARCHAR},
+      createTime = #{createtime,jdbcType=TIMESTAMP},
+      updateTime = #{updatetime,jdbcType=TIMESTAMP},
+      modifyTime = #{modifytime,jdbcType=TIMESTAMP},
+      delstatus = #{delstatus,jdbcType=BIT}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>
