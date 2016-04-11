@@ -16,6 +16,7 @@ import java.util.UUID;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.ws.commons.util.Base64.DecodingException;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -202,7 +203,7 @@ public class Jd {
 	}
 
 	private void crawlerBuylist(CrawlerClient client, JSONObject data_json) {
-		String listUrl = "http://order.jd.com/center/list.action";
+		String listUrl = "http://order.jd.com/center/list.action?search=0&d=2015&s=4096";
 
 		String pageContent = client.getPage(listUrl);
 		Document doc = Jsoup.parse(pageContent);
@@ -272,41 +273,56 @@ public class Jd {
 			Entry<Element, Elements> entry = iter.next();
 			Element keyElement = (Element) entry.getKey();
 			Elements valElements = (Elements) entry.getValue();
+			//交易时间
 			String dealtime = keyElement.select("tr.tr-th span.dealtime").first().attr("title");
 			json.put("dealtime", dealtime);
 			// 交易号
 			String number = keyElement.select("tr.tr-th span.number").first().text().replace("订单号：", "");
 			json.put("number", number);
+			
+			
 
 			JSONArray buyChildrenArray = new JSONArray();
 			if (valElements != null) {
 				for (Element valElement : valElements) {
-
-					String productId = HtmlAnalyze.getTagInfo(valElement.toString(), "class=\"goods-item p-", "\">");
-					JSONObject jsonP = productMap.get(productId);
-					dealtime = valElement.select("span.dealtime").first().attr("title");
-					jsonP.put("dealtime", dealtime);
-					// 交易号
-					number = valElement.select("span.number").first().text().replace("订单号：", "");
-					jsonP.put("number", number);
-					Elements consigneeEls = valElement.select("div.consignee div.pc p");
+					Elements productElements = valElement.select("tr.tr-bd");
+					
+					for (Element tempElement : productElements) {
+						String productId = HtmlAnalyze.getTagInfo(tempElement.toString(), "class=\"goods-item p-", "\">");
+						if(StringUtils.isBlank(productId)){
+							continue;
+						}
+						JSONObject jsonP = productMap.get(productId);
+						//数量
+						String quantity=tempElement.select("div.goods-number").text().trim().replace("x", "");
+						jsonP.put("quantity", quantity);
+						jsonP.put("dealtime", dealtime);
+						jsonP.put("number", number);
+						buyChildrenArray.put(jsonP);
+					}
+				}
+				if(buyChildrenArray.length()>0){
+					Element firstElement=valElements.first();
+					//金额
+					String amount ="";
+					if (keyElement.select("div.amount span").first() != null) {
+						amount = firstElement.select("div.amount span").first().text().replace("总额", "");
+					}
+					json.put("actualFee", amount);
+					//支付方式
+					String payment=firstElement.select("div.amount span.ftx-13").text();
+					json.put("payment", payment);
 					// 收货人
-					String consigner = valElement.select("div.consignee div.pc strong").text();
+					Elements consigneeEls = firstElement.select("div.consignee div.pc p");
+					String consigner = firstElement.select("div.consignee div.pc strong").text();
 					String address = consigneeEls.get(0).text();
 					String phone = consigneeEls.get(1).text();
-					jsonP.put("consigner", consigner);
-					jsonP.put("address", address);
-					jsonP.put("phone", phone);
-					//金额
-					String amount = valElement.select("div.amount span").first().text().replace("总额", "");
-					jsonP.put("amount", amount);
-					//支付方式
-					String payment=valElement.select("div.amount span.ftx-13").text();
-					jsonP.put("payment", payment);
+					json.put("consigner", consigner);
+					json.put("address", address);
+					json.put("phone", phone);
 					//订单状态
-					String orderstatus=valElement.select("span.order-status").text();
-					jsonP.put("orderstatus", orderstatus);
-					buyChildrenArray.put(jsonP);
+					String orderstatus=firstElement.select("span.order-status").text();
+					json.put("orderstatus", orderstatus);
 				}
 				json.put("productItems", buyChildrenArray);
 			} else {
@@ -319,8 +335,11 @@ public class Jd {
 				json.put("address", address);
 				json.put("phone", phone);
 				//金额
-				String amount = keyElement.select("div.amount span").first().text().replace("总额", "");
-				json.put("amount", amount);
+				String amount ="";
+				if (keyElement.select("div.amount span").first() != null) {
+					amount = keyElement.select("div.amount span").first().text().replace("总额", "");
+				}
+				json.put("actualFee", amount);
 				//支付方式
 				String payment=keyElement.select("div.amount span.ftx-13").text();
 				json.put("payment", payment);
@@ -332,9 +351,15 @@ public class Jd {
 				
 				for (Element valElement : productElements) {
 					String productId = HtmlAnalyze.getTagInfo(valElement.toString(), "class=\"goods-item p-", "\">");
+					if(StringUtils.isBlank(productId)){
+						continue;
+					}
 					JSONObject jsonP = productMap.get(productId);
 					jsonP.put("dealtime", dealtime);
 					jsonP.put("number", number);
+					//数量
+					String quantity=valElement.select("div.goods-number").text().trim().replace("x", "");
+					jsonP.put("quantity", quantity);
 					buyChildrenArray.put(jsonP);
 				}
 				json.put("productItems", buyChildrenArray);
@@ -343,49 +368,10 @@ public class Jd {
 		}
 		data_json.put("orderItems", buyArray);
 		System.out.println(data_json);
-
-		// for (Element element : tbodys) {
-		// if(element.attr("id").indexOf("parent")>-1){
-		// String id=element.attr("id");
-		// Elements childrenElements=new Elements();
-		// for (Element tempelement : tbodys) {
-		// if(tempelement.hasAttr("class")&&tempelement.attr("class").indexOf(id)>-1){
-		// childrenElements.add(tempelement);
-		// }
-		// }
-		// }
-		// }
-		// Iterator<Element> tbodyIt=tbodys.iterator();
-		// while(tbodyIt.hasNext()){
-		// JSONObject childJson=new JSONObject();
-		// Element tbodyelement=tbodyIt.next();
-		// String id=tbodyelement.attr("id");
-		// if(id.indexOf("parent")>-1){
-		// //交易时间
-		// String
-		// dealtime=tbodyelement.select("span.dealtime").first().attr("title");
-		// //交易号
-		// String
-		// number=tbodyelement.select("span.number").first().text().replace("订单号：",
-		// "");
-		// childJson.put("dealtime", dealtime);
-		// childJson.put("number", number);
-		// JSONArray childArray=new JSONArray();
-		// for (Element tbody : tbodys) {
-		// Elements chilrdenElements=tbody.getElementsByClass(id);
-		// json
-		// if(chilrdenElements!=null&&chilrdenElements.size()>0){
-		//
-		// }
-		//
-		// }
-		// }
-		// }
 	}
 
 	protected void doGetCookie() throws HttpException, IOException {
-		String pageContent = client
-				.getPage("https://passport.jd.com/new/login.aspx?ReturnUrl=http%3A%2F%2Fwww.jd.com%2F");
+		String pageContent = client.getPage("https://passport.jd.com/new/login.aspx?ReturnUrl=http%3A%2F%2Fwww.jd.com%2F");
 		Document doc = Jsoup.parse(pageContent);
 		Elements input_elements = doc.select("form#formlogin input");
 		uuid = input_elements.get(0).attr("value");

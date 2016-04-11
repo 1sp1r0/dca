@@ -1,10 +1,15 @@
 package com.dca.usercrawler.ecommerce.crawler;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.commons.lang3.StringUtils;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -15,19 +20,17 @@ import com.dca.common.LoginData;
 import com.dca.dto.Account;
 import com.dca.dto.ResultData;
 import com.dca.exceptions.CrawlerException;
+import com.dca.htmlutil.HtmlAnalyze;
 import com.dca.http.CrawlerClient;
 import com.dca.usercrawler.ecommerce.BaseEcommerceSimpleCrawler;
 import com.dca.usercrawler.helpers.RetryData;
-
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 
 @Component("jingdong")
 public class Jingdong extends BaseEcommerceSimpleCrawler {
 	public final static String FIRST_REFERER_URL = "https://passport.jd.com/new/login.aspx?ReturnUrl=http%3A%2F%2Fwww.jd.com%2F";
 
 	//账户名与密码不匹配，请重新输入
-	public final static String ERROR_WORD="\"pwd\":\"\\u8d26\\u6237\\u540d\\u4e0e\\u5bc6\\u7801\\u4e0d\\u5339\\u914d\\uff0c\\u8bf7\\u91cd\\u65b0\\u8f93\\u5165\"";
+	public final static String ERROR_MESSAGE="\"pwd\":\"\\u8d26\\u6237\\u540d\\u4e0e\\u5bc6\\u7801\\u4e0d\\u5339\\u914d\\uff0c\\u8bf7\\u91cd\\u65b0\\u8f93\\u5165\"";
 	@Override
 	protected CrawlerClient createCrawlerClient() {
 		// TODO Auto-generated method stub
@@ -105,7 +108,7 @@ public class Jingdong extends BaseEcommerceSimpleCrawler {
 		boolean r = (pageContent.indexOf(avlidContent) > -1) ? Boolean.valueOf(true) : Boolean.valueOf(false);
 		if (r) {
 			retryData.successful = true;
-		}else if(pageContent.indexOf(ERROR_WORD) > -1){
+		}else if(pageContent.indexOf(ERROR_MESSAGE) > -1){
 			retryData.successful = false;
 			retryData.errorMsg="用户名和密码不匹配";
 		}else if(pageContent.indexOf("\\u9a8c\\u8bc1\\u7801")>-1){
@@ -117,7 +120,174 @@ public class Jingdong extends BaseEcommerceSimpleCrawler {
 			retryData.successful = false;
 			retryData.errorMsg="请刷新页面后重新提交";
 		}
+	}
+	
+	private void crawlerBuylist(CrawlerClient client, JSONObject data_json) {
+		String listUrl = "http://order.jd.com/center/list.action?search=0&d=2015&s=4096";
 
+		String pageContent = client.getPage(listUrl);
+		Document doc = Jsoup.parse(pageContent);
+		String referer = "http://order.jd.com/center/list.action";
+		String orderWareIds = HtmlAnalyze.getTagInfo(pageContent, "ORDER_CONFIG['orderWareIds']='", "';");
+		String orderWareTypes = HtmlAnalyze.getTagInfo(pageContent, "ORDER_CONFIG['orderWareTypes']='", "';");
+		String orderIds = HtmlAnalyze.getTagInfo(pageContent, "ORDER_CONFIG['orderIds']='", "';");
+		String orderTypes = HtmlAnalyze.getTagInfo(pageContent, "ORDER_CONFIG['orderTypes']='", "';");
+		String orderSiteIds = HtmlAnalyze.getTagInfo(pageContent, "ORDER_CONFIG['orderSiteIds']='", "';");
+
+		String OrderProductInfoUrl = "http://order.jd.com/lazy/getOrderProductInfo.action";
+		// orderWareIds=1360763%2C11740734%2C11825528%2C1606798109%2C996967%2C1201234%2C1285569706&orderWareTypes=0%2C0%2C0%2C0%2C0%2C0%2C0&orderIds=12487807292%2C12012096677%2C12012096677%2C11983659005%2C11901151169%2C11850476585%2C11448927356&orderTypes=0%2C0%2C0%2C22%2C0%2C0%2C22&orderSiteIds=0%2C0%2C0%2C0%2C0%2C0%2C0
+		LinkedHashMap<String, String> postMap = new LinkedHashMap<String, String>();
+		postMap.put("orderWareIds", orderWareIds);
+		postMap.put("orderWareTypes", orderWareTypes);
+		postMap.put("orderIds", orderIds);
+		postMap.put("orderTypes", orderTypes);
+		postMap.put("orderSiteIds", orderSiteIds);
+		Map<String, String> headerParams = new HashMap<String, String>();
+		headerParams.put("Referer", referer);
+		client.setHeaderParams(headerParams);
+		pageContent = client.postPage(OrderProductInfoUrl, postMap);
+		JSONArray JSONArray = new JSONArray(pageContent);
+		HashMap<String, JSONObject> productMap = new HashMap<String, JSONObject>();
+		for (Object object : JSONArray) {
+			JSONObject json = (JSONObject) object;
+			JSONObject tempjson = new JSONObject();
+			tempjson.put("name", json.getString("name"));
+			tempjson.put("productId", json.getLong("productId"));
+			tempjson.put("wareUrl", json.getString("wareUrl"));
+			tempjson.put("imgPath", json.getString("imgPath"));
+			productMap.put(String.valueOf(json.getLong("productId")), tempjson);
+		}
+		com.dca.util.FileUtils.writeStream("C:\\Users\\admin\\Desktop\\jd1.txt", pageContent, true);
+		HashMap<Element, Elements> elementGroups = new HashMap<Element, Elements>();
+		ArrayList<Element> groups = new ArrayList<Element>();
+		Elements tbodys = doc.select("table.td-void tbody");
+		for (Element element : tbodys) {
+			if (element.attr("id").indexOf("parent") > -1) {
+				groups.add(element);
+			} else if (!element.hasAttr("class")) {
+				groups.add(element);
+			}
+		}
+
+		for (Element element : groups) {
+			if (element.attr("id").indexOf("parent") > -1) {
+				String id = element.attr("id");
+				Elements childrenElements = new Elements();
+
+				for (Element tempelement : tbodys) {
+					if (tempelement.hasAttr("class") && tempelement.attr("class").indexOf(id) > -1) {
+						childrenElements.add(tempelement);
+					}
+				}
+				elementGroups.put(element, childrenElements);
+			} else {
+				elementGroups.put(element, null);
+			}
+
+		}
+
+		Iterator<Entry<Element, Elements>> iter = elementGroups.entrySet().iterator();
+		JSONArray buyArray = new JSONArray();
+		while (iter.hasNext()) {
+			JSONObject json = new JSONObject();
+			Entry<Element, Elements> entry = iter.next();
+			Element keyElement = (Element) entry.getKey();
+			Elements valElements = (Elements) entry.getValue();
+			//交易时间
+			String dealtime = keyElement.select("tr.tr-th span.dealtime").first().attr("title");
+			json.put("dealtime", dealtime);
+			// 交易号
+			String number = keyElement.select("tr.tr-th span.number").first().text().replace("订单号：", "");
+			json.put("number", number);
+			
+			
+
+			JSONArray buyChildrenArray = new JSONArray();
+			if (valElements != null) {
+				for (Element valElement : valElements) {
+					Elements productElements = valElement.select("tr.tr-bd");
+					
+					for (Element tempElement : productElements) {
+						String productId = HtmlAnalyze.getTagInfo(tempElement.toString(), "class=\"goods-item p-", "\">");
+						if(StringUtils.isBlank(productId)){
+							continue;
+						}
+						JSONObject jsonP = productMap.get(productId);
+						//数量
+						String quantity=tempElement.select("div.goods-number").text().trim().replace("x", "");
+						jsonP.put("quantity", quantity);
+						jsonP.put("dealtime", dealtime);
+						jsonP.put("number", number);
+						buyChildrenArray.put(jsonP);
+					}
+				}
+				if(buyChildrenArray.length()>0){
+					Element firstElement=valElements.first();
+					//金额
+					String amount ="";
+					if (keyElement.select("div.amount span").first() != null) {
+						amount = firstElement.select("div.amount span").first().text().replace("总额", "");
+					}
+					json.put("actualFee", amount);
+					//支付方式
+					String payment=firstElement.select("div.amount span.ftx-13").text();
+					json.put("payment", payment);
+					// 收货人
+					Elements consigneeEls = firstElement.select("div.consignee div.pc p");
+					String consigner = firstElement.select("div.consignee div.pc strong").text();
+					String address = consigneeEls.get(0).text();
+					String phone = consigneeEls.get(1).text();
+					json.put("consigner", consigner);
+					json.put("address", address);
+					json.put("phone", phone);
+					//订单状态
+					String orderstatus=firstElement.select("span.order-status").text();
+					json.put("orderstatus", orderstatus);
+				}
+				json.put("productItems", buyChildrenArray);
+			} else {
+				Elements consigneeEls = keyElement.select("div.consignee div.pc p");
+				// 收货人
+				String consigner = keyElement.select("div.consignee div.pc strong").text();
+				String address = consigneeEls.get(0).text();
+				String phone = consigneeEls.get(1).text();
+				json.put("consigner", consigner);
+				json.put("address", address);
+				json.put("phone", phone);
+				//金额
+				String amount ="";
+				if (keyElement.select("div.amount span").first() != null) {
+					amount = keyElement.select("div.amount span").first().text().replace("总额", "");
+				}
+				json.put("actualFee", amount);
+				//支付方式
+				String payment=keyElement.select("div.amount span.ftx-13").text();
+				json.put("payment", payment);
+				//订单状态
+				String orderstatus=keyElement.select("span.order-status").text();
+				json.put("orderstatus", orderstatus);
+				
+				Elements productElements = keyElement.select("tr.tr-bd");
+				
+				for (Element valElement : productElements) {
+					String productId = HtmlAnalyze.getTagInfo(valElement.toString(), "class=\"goods-item p-", "\">");
+					if(StringUtils.isBlank(productId)){
+						continue;
+					}
+					JSONObject jsonP = productMap.get(productId);
+					jsonP.put("dealtime", dealtime);
+					jsonP.put("number", number);
+					//数量
+					String quantity=valElement.select("div.goods-number").text().trim().replace("x", "");
+					jsonP.put("quantity", quantity);
+					buyChildrenArray.put(jsonP);
+				}
+				json.put("productItems", buyChildrenArray);
+			}
+			buyArray.put(json);
+		}
+		data_json.put("orderItems", buyArray);
+		System.out.println(data_json);
 	}
 
 	@Override
@@ -149,12 +319,13 @@ public class Jingdong extends BaseEcommerceSimpleCrawler {
 			for (int i = 0; i < details.size(); i++) {
 				detail.put(headInfos[i],details.get(i).select("div.fl").first().text());
 			}
-			if(!detail.isEmpty())
-				address_array.add(detail);
+			if(!detail.has(headInfos[0]))
+				address_array.put(detail);
 		}
 		
 		JSONObject data_json=new JSONObject();
 		data_json.put("addressList", address_array);
+		crawlerBuylist(client, data_json);
 		System.out.println(data_json);
 		ResultData data = new ResultData();
 		data.setResult(data_json.toString());

@@ -5,6 +5,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
@@ -17,9 +19,6 @@ import com.dca.exceptions.CrawlerException;
 import com.dca.http.CrawlerClient;
 import com.dca.usercrawler.helpers.RetryData;
 import com.dca.usercrawler.providentfund.BaseProvidentFundSimpleCrawler;
-
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 @Component("hangzhou_fund")
 public class Hangzhougjj extends BaseProvidentFundSimpleCrawler {
 	public final static String FIRST_REFERER_URL = "http://www.hzgjj.gov.cn:8080/WebAccounts/pages/per/login.jsp";
@@ -169,7 +168,7 @@ public class Hangzhougjj extends BaseProvidentFundSimpleCrawler {
 					singleData.put(headInfos[j], tds.get(j).text());
 				}
 			}
-			jsonArray.add(singleData);
+			jsonArray.put(singleData);
 		}
 		jsonData.put(key, jsonArray);
 	}
@@ -198,7 +197,7 @@ public class Hangzhougjj extends BaseProvidentFundSimpleCrawler {
 					singleData.put(headInfos[j], tds.get(j).text());
 				}
 			}
-			jsonArray.add(singleData);
+			jsonArray.put(singleData);
 		}
 		jsonData.put(key, jsonArray);
 	}

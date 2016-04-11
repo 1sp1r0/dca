@@ -2,19 +2,16 @@ package com.dca.demo;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.HttpCookie;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
-import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
-import org.apache.http.impl.cookie.BasicClientCookie;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -33,17 +30,12 @@ import com.gargoylesoftware.htmlunit.WebResponse;
 import com.gargoylesoftware.htmlunit.WebResponseData;
 import com.gargoylesoftware.htmlunit.html.HtmlButton;
 import com.gargoylesoftware.htmlunit.html.HtmlForm;
-import com.gargoylesoftware.htmlunit.html.HtmlImage;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.gargoylesoftware.htmlunit.html.HtmlPasswordInput;
-import com.gargoylesoftware.htmlunit.html.HtmlSubmitInput;
 import com.gargoylesoftware.htmlunit.html.HtmlTextInput;
-import com.gargoylesoftware.htmlunit.util.Cookie;
 import com.gargoylesoftware.htmlunit.util.NameValuePair;
 import com.gargoylesoftware.htmlunit.util.WebConnectionWrapper;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 
 public class Taobao4 {
 	protected static final List<NameValuePair> JAVASCRIPT_HEADERS = new ArrayList<NameValuePair>();
@@ -196,6 +188,7 @@ public class Taobao4 {
 		System.out.println(mainPage.asXml());
 		com.dca.util.FileUtils.writeByCharStream("C:\\Users\\admin\\Desktop\\数据\\电商\\淘宝.txt", mainPage.asXml(), "utf-8",
 				true);
+		crawlerData(webClient);
 	}
 
 	/**
@@ -203,48 +196,62 @@ public class Taobao4 {
 	 * 
 	 * @throws Exception
 	 */
-	protected void crawlerData() throws Exception {
-		// 个人信息 http://i.jd.com/user/info
-		Document doc = null;
-		String pageContent = null;
-		// String pageContent=client.getPage("http://i.jd.com/user/info");
-		// System.out.println(pageContent);
-
-		// 收货地址 http://easybuy.jd.com/address/getEasyBuyList.action
-		pageContent = client.getPage("https://member1.taobao.com/member/fresh/deliver_address.htm");
-		doc = Jsoup.parse(pageContent);
-		Elements address_elements = doc.select("div#addressList div.sm");
-		/**
-		 * consigner;//收货人 String location;//所在区域 String address;//地址 String
-		 * phone;//手机 String fixed_phone;//固定电话 String email;//电子邮箱
-		 */
-		JSONArray address_array = new JSONArray();
-		JSONObject detail = null;
-		String[] headInfos = { "consigner", "location", "address", "phone", "fixed_phone", "email" };
-		for (Element address_element : address_elements) {
-			Elements details = address_element.select("div.item");
-			System.out.println(details.last());
-			detail = new JSONObject();
-			for (int i = 0; i < details.size(); i++) {
-				System.out.println(details.get(i));
-				detail.put(headInfos[i], details.get(i).select("div.fl").first().text());
+	protected void crawlerData(WebClient webClient) throws Exception {
+		JSONObject data_json=new JSONObject();
+		HtmlPage mainPage = webClient.getPage("https://buyertrade.taobao.com/trade/itemlist/list_bought_items.htm");
+		System.out.println(mainPage.asXml());
+		
+		String avalidContent=HtmlAnalyze.getTagInfo(mainPage.asXml(), "var data =", "</script>");
+		com.dca.util.FileUtils.writeByCharStream("C:\\Users\\admin\\Desktop\\数据\\电商\\淘宝.txt", avalidContent, "utf-8",
+				true);
+		JSONObject conentJson=new JSONObject(avalidContent);
+		JSONArray orderArray=conentJson.getJSONArray("mainOrders");
+		JSONArray buyArray = new JSONArray();
+		for (Object object : orderArray) {
+			JSONObject orderObject=(JSONObject) object;
+			JSONObject json = new JSONObject();
+			//交易时间
+			JSONObject orderInfo=(JSONObject) orderObject.get("orderInfo");
+			String dealtime = orderInfo.getString("createTime");
+			json.put("dealtime", dealtime);
+			// 交易号
+			String number = orderObject.getString("id");
+			json.put("number", number);
+			//实际支付
+			String actualFee = ((JSONObject) orderObject.get("payInfo")).getString("actualFee");
+			json.put("actualFee", actualFee);
+			//状态
+			String orderstatus=((JSONObject) orderObject.get("statusInfo")).getString("text");
+			json.put("orderstatus", orderstatus);
+			JSONArray buyChildrenArray = new JSONArray();
+			JSONArray subOrdersArray=orderObject.getJSONArray("subOrders");
+			for (Object object2 : subOrdersArray) {
+				JSONObject buyChildjson=(JSONObject) object2;
+				JSONObject jsonP =new JSONObject();
+				// 交易号
+				number = buyChildjson.getString("id");
+				jsonP.put("number", number);
+				JSONObject itemInfo=(JSONObject) orderObject.get("itemInfo");
+				jsonP.put("name", itemInfo.getString("title"));
+				jsonP.put("wareUrl", itemInfo.getLong("itemUrl"));
+				jsonP.put("name", itemInfo.getString("title"));
+				//实际价格
+				jsonP.put("realAmount", ((JSONObject) orderObject.get("priceInfo")).getString("realTotal"));
+				//数量
+				jsonP.put("quantity", buyChildjson.getString("quantity"));
+				jsonP.put("imgPath", buyChildjson.getString("pic"));
+				buyChildrenArray.put(jsonP);
 			}
-			if (!detail.isEmpty())
-				address_array.add(detail);
+			json.put("productItems", buyChildrenArray);
+			buyArray.put(json);
 		}
-
-		JSONObject data_json = new JSONObject();
-		data_json.put("addressList", address_array);
+		data_json.put("orderItems", buyArray);
 		System.out.println(data_json);
-
-		// //订单信息
-		// pageContent=client.getPage("http://order.jd.com/center/list.action");
-		// System.out.println(pageContent);
 	}
 
 	private class CustomWebConnectionWrapper extends WebConnectionWrapper {
 
-		private final WebClient webClient;
+		private WebClient webClient;
 
 		public CustomWebConnectionWrapper(WebClient webClient) {
 			super(webClient);
@@ -303,30 +310,87 @@ public class Taobao4 {
 		}
 	}
 
-	public static void main(String[] args) throws Exception {
-		Taobao4 tb = new Taobao4();
-		tb.postConstruct();
-		tb.createCrawlerClient();
-		WebClient webClient = new WebClient(BrowserVersion.INTERNET_EXPLORER);
-		webClient.getOptions().setJavaScriptEnabled(true);
-		webClient.getOptions().setCssEnabled(false);
-		webClient.getOptions().setRedirectEnabled(true);
-		webClient.getOptions().setThrowExceptionOnScriptError(false);
-		webClient.getOptions().setThrowExceptionOnFailingStatusCode(true);
-		webClient.getOptions().setTimeout(15000);
-		webClient.getOptions().setSSLClientProtocols(new String[] { "SSLv3", "TLSv1" });
-
-		// webClient.setAjaxController(new SynchronousAjaxController());
-
-		tb.tryLoginUser(12, "15802489620", "yang1258.", webClient);
-		// WebClient webClient = new WebClient();
-		//
-		// String url = "http://www.fqgj.net/";
-		// HtmlPage _p = webClient.getPage(url);
-		//
-		// System.out.println(_p.getWebResponse().toString());
-
-		// System.out.println(new
-		// String(Base64.decodeBase64("eyJuZWVkY29kZSI6dHJ1ZX0=".getBytes())));
+//	public static void main(String[] args) throws Exception {
+//		Taobao4 tb = new Taobao4();
+//		tb.postConstruct();
+//		tb.createCrawlerClient();
+//		WebClient webClient = new WebClient(BrowserVersion.INTERNET_EXPLORER);
+//		webClient.getOptions().setJavaScriptEnabled(true);
+//		webClient.getOptions().setCssEnabled(false);
+//		webClient.getOptions().setRedirectEnabled(true);
+//		webClient.getOptions().setThrowExceptionOnScriptError(false);
+//		webClient.getOptions().setThrowExceptionOnFailingStatusCode(true);
+//		webClient.getOptions().setTimeout(15000);
+//		webClient.getOptions().setSSLClientProtocols(new String[] { "SSLv3", "TLSv1" });
+//
+//		// webClient.setAjaxController(new SynchronousAjaxController());
+//
+//		tb.tryLoginUser(12, "15802489620", "yang1258.", webClient);
+//		// WebClient webClient = new WebClient();
+//		//
+//		// String url = "http://www.fqgj.net/";
+//		// HtmlPage _p = webClient.getPage(url);
+//		//
+//		// System.out.println(_p.getWebResponse().toString());
+//
+//		// System.out.println(new
+//		// String(Base64.decodeBase64("eyJuZWVkY29kZSI6dHJ1ZX0=".getBytes())));
+//	}
+	public static void main(String[] args) {
+		JSONObject data_json=new JSONObject();
+		String avalidContent =com.dca.util.FileUtils.readFileByLines("C:\\Users\\admin\\Desktop\\数据\\电商\\淘宝.txt","utf-8");
+		avalidContent=HtmlAnalyze.getTagInfo(avalidContent, "var data =", "</script>").replace("//]]>", "");
+//		System.out.println(avalidContent);
+		JSONObject conentJson=new JSONObject(avalidContent);
+		JSONArray orderArray=conentJson.getJSONArray("mainOrders");
+		JSONArray buyArray = new JSONArray();
+		for (Object object : orderArray) {
+			JSONObject orderObject=(JSONObject) object;
+			JSONObject json = new JSONObject();
+			//交易时间
+			JSONObject orderInfo=(JSONObject) orderObject.get("orderInfo");
+			String dealtime = orderInfo.getString("createTime");
+			json.put("dealtime", dealtime);
+			// 交易号
+			String number = orderObject.getString("id");
+			json.put("number", number);
+			//实际支付
+			String actualFee = ((JSONObject) orderObject.get("payInfo")).getString("actualFee");
+			json.put("actualFee", actualFee);
+			//状态
+			String orderstatus=((JSONObject) orderObject.get("statusInfo")).getString("text");
+			json.put("orderstatus", orderstatus);
+			JSONArray buyChildrenArray = new JSONArray();
+			JSONArray subOrdersArray=orderObject.getJSONArray("subOrders");
+			for (Object object2 : subOrdersArray) {
+				JSONObject buyChildjson=(JSONObject) object2;
+				if(!buyChildjson.has("id")||buyChildjson.getLong("id")==-1){
+					continue;
+				}
+				JSONObject jsonP =new JSONObject();
+				// 交易号
+				number = String.valueOf(buyChildjson.getLong("id"));
+				jsonP.put("number", number);
+				JSONObject itemInfo=(JSONObject) buyChildjson.get("itemInfo");
+				jsonP.put("name", itemInfo.getString("title"));
+				if(!itemInfo.has("itemUrl")){
+					jsonP.put("wareUrl", "");
+				}else{
+					jsonP.put("wareUrl", "http:"+itemInfo.getString("itemUrl"));
+				}
+				
+				jsonP.put("imgPath", "http:"+itemInfo.getString("pic"));
+				//实际价格
+				jsonP.put("realAmount", ((JSONObject) buyChildjson.get("priceInfo")).getString("realTotal"));
+				//数量
+				jsonP.put("quantity", buyChildjson.getString("quantity"));
+				
+				buyChildrenArray.put(jsonP);
+			}
+			json.put("productItems", buyChildrenArray);
+			buyArray.put(json);
+		}
+		data_json.put("orderItems", buyArray);
+		System.out.println(data_json);
 	}
 }
