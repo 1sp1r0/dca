@@ -306,7 +306,7 @@ public class Taobao extends BaseEcommerceComplexCrawler {
 	private class CustomWebConnectionWrapper extends WebConnectionWrapper {
 
 		private WebClient webClient;
-
+		
 		public CustomWebConnectionWrapper(WebClient webClient) {
 			super(webClient);
 			this.webClient = webClient;
