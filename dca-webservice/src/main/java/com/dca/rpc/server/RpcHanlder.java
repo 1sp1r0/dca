@@ -34,11 +34,16 @@ public class RpcHanlder {
 	}
 	
 	@Test
-	public void testEcommerce(){
+	public void testEcommerce_jd(){
 		crawl(1, 1, new String(Base64.decodeBase64("OTkyMzkxMzU3QHFxLmNvbQ==".getBytes())),new String(Base64.decodeBase64("eWFuZzEyNTg=".getBytes())),"e_commerce","京东");
 	}
 	
+	@Test
+	public void testEcommerce_tb(){
+		crawl(1, 3, "15802489620","yang1258.","e_commerce","淘宝");
+	}
+	
 	public static void main(String[] args) {
-		new RpcHanlder().crawl(2, 2, "082829007900", "435582","provident_fund","杭州");
+		new RpcHanlder().crawl(1, 3, "15802489620","yang1258.","e_commerce","淘宝");
 	}
 }

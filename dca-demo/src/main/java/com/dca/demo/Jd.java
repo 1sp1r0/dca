@@ -189,6 +189,12 @@ public class Jd {
 				System.out.println(details.get(i));
 				detail.put(headInfos[i], details.get(i).select("div.fl").first().text());
 			}
+			//默认？
+			if(address_element.toString().indexOf("默认地址")>-1){
+				detail.put("is_default","1");
+			}else{
+				detail.put("is_default","0");
+			}
 			if (detail.has("consigner"))
 				address_array.put(detail);
 		}
@@ -197,9 +203,6 @@ public class Jd {
 		data_json.put("addressList", address_array);
 		System.out.println(data_json);
 		crawlerBuylist(client, data_json);
-		// //订单信息
-		// pageContent=client.getPage("http://order.jd.com/center/list.action");
-		// System.out.println(pageContent);
 	}
 
 	private void crawlerBuylist(CrawlerClient client, JSONObject data_json) {
@@ -274,12 +277,14 @@ public class Jd {
 			Element keyElement = (Element) entry.getKey();
 			Elements valElements = (Elements) entry.getValue();
 			//交易时间
-			String dealtime = keyElement.select("tr.tr-th span.dealtime").first().attr("title");
+			String dealtime = keyElement.select("tr.tr-th span.dealtime").first().attr("title").trim();
 			json.put("dealtime", dealtime);
 			// 交易号
-			String number = keyElement.select("tr.tr-th span.number").first().text().replace("订单号：", "");
+			String number = keyElement.select("tr.tr-th span.number").first().text().replace("订单号：", "").trim();
 			json.put("number", number);
-			
+			if("10700834171".equals(number)){
+				System.out.println("11");
+			}
 			
 
 			JSONArray buyChildrenArray = new JSONArray();
@@ -305,43 +310,45 @@ public class Jd {
 					Element firstElement=valElements.first();
 					//金额
 					String amount ="";
-					if (keyElement.select("div.amount span").first() != null) {
+					if (firstElement.select("div.amount span").first() != null) {
 						amount = firstElement.select("div.amount span").first().text().replace("总额", "");
 					}
 					json.put("actualFee", amount);
 					//支付方式
-					String payment=firstElement.select("div.amount span.ftx-13").text();
+					String payment=firstElement.select("div.amount span.ftx-13").text().trim();
 					json.put("payment", payment);
 					// 收货人
 					Elements consigneeEls = firstElement.select("div.consignee div.pc p");
-					String consigner = firstElement.select("div.consignee div.pc strong").text();
-					String address = consigneeEls.get(0).text();
-					String phone = consigneeEls.get(1).text();
+					String consigner = firstElement.select("div.consignee div.pc strong").text().trim();
+					String address = consigneeEls.get(0).text().trim();
+					String phone = consigneeEls.get(1).text().trim();
 					json.put("consigner", consigner);
 					json.put("address", address);
 					json.put("phone", phone);
 					//订单状态
-					String orderstatus=firstElement.select("span.order-status").text();
+					String orderstatus=firstElement.select("span.order-status").text().trim();
 					json.put("orderstatus", orderstatus);
 				}
 				json.put("productItems", buyChildrenArray);
 			} else {
 				Elements consigneeEls = keyElement.select("div.consignee div.pc p");
 				// 收货人
-				String consigner = keyElement.select("div.consignee div.pc strong").text();
-				String address = consigneeEls.get(0).text();
-				String phone = consigneeEls.get(1).text();
+				String consigner = keyElement.select("div.consignee div.pc strong").text().trim();
+				String address = consigneeEls.get(0).text().trim();
+				String phone = consigneeEls.get(1).text().trim();
 				json.put("consigner", consigner);
 				json.put("address", address);
 				json.put("phone", phone);
 				//金额
 				String amount ="";
 				if (keyElement.select("div.amount span").first() != null) {
-					amount = keyElement.select("div.amount span").first().text().replace("总额", "");
+					amount = keyElement.select("div.amount span").first().text().trim().replace("总额", "");
+				}else{
+					continue;
 				}
 				json.put("actualFee", amount);
 				//支付方式
-				String payment=keyElement.select("div.amount span.ftx-13").text();
+				String payment=keyElement.select("div.amount span.ftx-13").text().trim();
 				json.put("payment", payment);
 				//订单状态
 				String orderstatus=keyElement.select("span.order-status").text();

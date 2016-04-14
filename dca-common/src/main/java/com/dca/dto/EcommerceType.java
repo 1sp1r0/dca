@@ -7,7 +7,7 @@ import java.util.Map;
  *
  */
 public enum EcommerceType {
-	JingD(1,"jingdong", "京东"),TaoB(2,"taobao", "taobao");
+	JingD(1,"jingdong", "京东"),TaoB(2,"taobao", "淘宝");
 	private static final Map<Long, EcommerceType> EcommerceIdMap = new HashMap<Long, EcommerceType>();
 	private static final Map<String, EcommerceType> EcommerceNameMap = new HashMap<String, EcommerceType>();
 

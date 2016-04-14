@@ -62,7 +62,7 @@ public class FileUtils {
 	/**
 	 * 字符流读文件
 	 */
-	public String readFileByCharStream(String path) {
+	public static String readFileByCharStream(String path) {
 		File file = new File(path);
 		if (!file.exists()) {
 			return null;

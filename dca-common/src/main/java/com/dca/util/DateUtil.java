@@ -175,6 +175,9 @@ public class DateUtil {
 	}
 
 	public static void main(String[] args) {
-		System.out.println(DateUtil.getbeforeDate("07月10日"));
+		Long timestamp = 1459944000*1000l;  
+		String date = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new java.util.Date(timestamp)); 
+		System.out.println(date);
+		System.out.println(DateUtil.format(new java.util.Date(1459944000*1000l), "yyyy-MM-dd HH:mm:ss"));
 	}
 }

@@ -194,12 +194,14 @@ public class Jingdong extends BaseEcommerceSimpleCrawler {
 			Element keyElement = (Element) entry.getKey();
 			Elements valElements = (Elements) entry.getValue();
 			//交易时间
-			String dealtime = keyElement.select("tr.tr-th span.dealtime").first().attr("title");
+			String dealtime = keyElement.select("tr.tr-th span.dealtime").first().attr("title").trim();
 			json.put("dealtime", dealtime);
 			// 交易号
-			String number = keyElement.select("tr.tr-th span.number").first().text().replace("订单号：", "");
+			String number = keyElement.select("tr.tr-th span.number").first().text().replace("订单号：", "").trim();
 			json.put("number", number);
-			
+			if("10700834171".equals(number)){
+				System.out.println("11");
+			}
 			
 
 			JSONArray buyChildrenArray = new JSONArray();
@@ -225,43 +227,45 @@ public class Jingdong extends BaseEcommerceSimpleCrawler {
 					Element firstElement=valElements.first();
 					//金额
 					String amount ="";
-					if (keyElement.select("div.amount span").first() != null) {
+					if (firstElement.select("div.amount span").first() != null) {
 						amount = firstElement.select("div.amount span").first().text().replace("总额", "");
 					}
 					json.put("actualFee", amount);
 					//支付方式
-					String payment=firstElement.select("div.amount span.ftx-13").text();
+					String payment=firstElement.select("div.amount span.ftx-13").text().trim();
 					json.put("payment", payment);
 					// 收货人
 					Elements consigneeEls = firstElement.select("div.consignee div.pc p");
-					String consigner = firstElement.select("div.consignee div.pc strong").text();
-					String address = consigneeEls.get(0).text();
-					String phone = consigneeEls.get(1).text();
+					String consigner = firstElement.select("div.consignee div.pc strong").text().trim();
+					String address = consigneeEls.get(0).text().trim();
+					String phone = consigneeEls.get(1).text().trim();
 					json.put("consigner", consigner);
 					json.put("address", address);
 					json.put("phone", phone);
 					//订单状态
-					String orderstatus=firstElement.select("span.order-status").text();
+					String orderstatus=firstElement.select("span.order-status").text().trim();
 					json.put("orderstatus", orderstatus);
 				}
 				json.put("productItems", buyChildrenArray);
 			} else {
 				Elements consigneeEls = keyElement.select("div.consignee div.pc p");
 				// 收货人
-				String consigner = keyElement.select("div.consignee div.pc strong").text();
-				String address = consigneeEls.get(0).text();
-				String phone = consigneeEls.get(1).text();
+				String consigner = keyElement.select("div.consignee div.pc strong").text().trim();
+				String address = consigneeEls.get(0).text().trim();
+				String phone = consigneeEls.get(1).text().trim();
 				json.put("consigner", consigner);
 				json.put("address", address);
 				json.put("phone", phone);
 				//金额
 				String amount ="";
 				if (keyElement.select("div.amount span").first() != null) {
-					amount = keyElement.select("div.amount span").first().text().replace("总额", "");
+					amount = keyElement.select("div.amount span").first().text().trim().replace("总额", "");
+				}else{
+					continue;
 				}
 				json.put("actualFee", amount);
 				//支付方式
-				String payment=keyElement.select("div.amount span.ftx-13").text();
+				String payment=keyElement.select("div.amount span.ftx-13").text().trim();
 				json.put("payment", payment);
 				//订单状态
 				String orderstatus=keyElement.select("span.order-status").text();
@@ -293,38 +297,38 @@ public class Jingdong extends BaseEcommerceSimpleCrawler {
 	@Override
 	protected ResultData crawlAccountData(Account account, LoginData loginData, CrawlerClient client) throws Exception {
 		// TODO Auto-generated method stub
-		//个人信息 http://i.jd.com/user/info
-		Document doc=null;
-		String pageContent=null;
-//		String pageContent=client.getPage("http://i.jd.com/user/info");
-//		System.out.println(pageContent);
-		
-		//收货地址 http://easybuy.jd.com/address/getEasyBuyList.action
-		pageContent=client.getPage("http://easybuy.jd.com/address/getEasyBuyList.action");
-		doc=Jsoup.parse(pageContent);
-		Elements address_elements=doc.select("div#addressList div.sm");
-		/**consigner;//收货人
-		String location;//所在区域
-		String address;//地址
-		String phone;//手机
-		String fixed_phone;//固定电话
-		String email;//电子邮箱
-		*/
-		JSONArray address_array=new JSONArray();
-		JSONObject detail=null;
-		String[] headInfos={"consigner","location","address","phone","fixed_phone","email"};
+		// 个人信息 http://i.jd.com/user/info
+		Document doc = null;
+		String pageContent = null;
+		// String pageContent=client.getPage("http://i.jd.com/user/info");
+		// System.out.println(pageContent);
+
+		// 收货地址 http://easybuy.jd.com/address/getEasyBuyList.action
+		pageContent = client.getPage("http://easybuy.jd.com/address/getEasyBuyList.action");
+		doc = Jsoup.parse(pageContent);
+		Elements address_elements = doc.select("div#addressList div.sm");
+		/**
+		 * consigner;//收货人 String location;//所在区域 String address;//地址 String
+		 * phone;//手机 String fixed_phone;//固定电话 String email;//电子邮箱
+		 */
+		JSONArray address_array = new JSONArray();
+		JSONObject detail = null;
+		String[] headInfos = { "consigner", "location", "address", "phone", "fixed_phone", "email" };
 		for (Element address_element : address_elements) {
-			Elements details=address_element.select("div.item");
-			detail=new JSONObject();
+			Elements details = address_element.select("div.item");
+			System.out.println(details.last());
+			detail = new JSONObject();
 			for (int i = 0; i < details.size(); i++) {
-				detail.put(headInfos[i],details.get(i).select("div.fl").first().text());
+				System.out.println(details.get(i));
+				detail.put(headInfos[i], details.get(i).select("div.fl").first().text());
 			}
-			if(!detail.has(headInfos[0]))
+			if (detail.has("consigner"))
 				address_array.put(detail);
 		}
-		
-		JSONObject data_json=new JSONObject();
+
+		JSONObject data_json = new JSONObject();
 		data_json.put("addressList", address_array);
+		System.out.println(data_json);
 		crawlerBuylist(client, data_json);
 		System.out.println(data_json);
 		ResultData data = new ResultData();

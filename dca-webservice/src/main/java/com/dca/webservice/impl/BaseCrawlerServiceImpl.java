@@ -61,7 +61,7 @@ public class BaseCrawlerServiceImpl implements NewsCrawlerService {
 		try {
 			Account account = new Account(userId, accountId, username, password);
 			CrawlData data = crawler.crawlAccountData(account, loginData);
-			dataLoaderService.dataLoader(userId, username, data, type);
+//			dataLoaderService.dataLoader(userId, username, data, type);
 			logCrawlActivity(userId,accountId,resSign,"成功","","成功","");
 			LOGGER.info("CrawlerData state: {} with error: {},Total times:{}", data.isSuccess(),data.getErrMessage(),System.currentTimeMillis() - start);
 		} catch (Exception e) {
