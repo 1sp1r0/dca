@@ -220,6 +220,7 @@ public class Vip extends BaseEcommerceComplexCrawler {
 	protected ResultData crawlAccountData(Account account, LoginData loginData, WebClient client) throws Exception {
 		// https://member1.taobao.com/member/fresh/deliver_address.htm
 		JSONObject data_json = new JSONObject();
+		data_json.put("type", "VIP");
 		WebRequest addressRequest =new WebRequest(new URL("http://myi.vip.com/api/address?"+System.currentTimeMillis()), HttpMethod.GET);
 		WebResponse addressResponse = client.loadWebResponse(addressRequest);
 	    String addressContent = addressResponse.getContentAsString();
@@ -244,7 +245,9 @@ public class Vip extends BaseEcommerceComplexCrawler {
 	    data_json.put("addressList", address_array);
 	    crawlerBuylist(client, data_json);
 	    System.out.println(data_json);
-		return null;
+	    ResultData data = new ResultData();
+		data.setResult(data_json.toString());
+		return data;
 	}
 
 	private void crawlerBuylist(WebClient webClient, JSONObject data_json)

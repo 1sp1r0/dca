@@ -89,16 +89,12 @@ public class Vip {
 	protected void postConstruct() {
 		final String pathPrefix = "E:/project/data-crawler-architecture/dca-demo/Js/vip/";
 		Map<String, String> jsMappings = new HashMap<String, String>();
-		jsMappings.put("http://s2.vipstatic.com/js/public/jquery-1.10.2.js?12016041201",
-				pathPrefix + "jquery-1.10.2.js");
+		jsMappings.put("http://s2.vipstatic.com/js/public/jquery-1.10.2.js?12016041201",pathPrefix + "jquery-1.10.2.js");
 		jsMappings.put("http://s2.vipstatic.com/js/public/core3.js?12016041201", pathPrefix + "core3.js");
 		jsMappings.put("http://s2.vipstatic.com/js/public/te/4_1/index_a.js?12016041201", pathPrefix + "index_a.js");
 		jsMappings.put("http://s2.vipstatic.com/js/public/te/4_1/index.js?12016041201", pathPrefix + "index.js");
-		jsMappings.put("http://shop.vipstatic.com/js/public/common/header_com.js?12016041101",
-				pathPrefix + "header_com.js");
-		jsMappings.put(
-				"http://shop.vipstatic.com/js/public/plugins/perfect-scrollbar-0.4.8.with-mousewheel.min.js?12016041101",
-				pathPrefix + "mousewheel.min.js");
+		jsMappings.put("http://shop.vipstatic.com/js/public/common/header_com.js?12016041101",pathPrefix + "header_com.js");
+		jsMappings.put("http://shop.vipstatic.com/js/public/plugins/perfect-scrollbar-0.4.8.with-mousewheel.min.js?12016041101",pathPrefix + "mousewheel.min.js");
 		jsMappings.put("http://s2.vipstatic.com/js/public/te/1/inf.js?12016041201", pathPrefix + "inf.js");
 		jsMappings.put("http://shop.vipstatic.com/js/public/common/sidebar.js?12016041101", pathPrefix + "sidebar.js");
 
@@ -108,14 +104,10 @@ public class Vip {
 		jsMappings.put("http://ms.vipstatic.com/vtm/jquery.md5.min.js", pathPrefix + "jquery.md5.min.js");
 		jsMappings.put("https://user.vipstatic.com/passport/js/ads.js?20160309-014204", pathPrefix + "ads.js");
 
-		jsMappings.put("https://ms.vipstatic.com/vtm/vtm_config_res/prod/1428025414396_js_core.js",
-				pathPrefix + "1428025414396_js_core.js");
-		jsMappings.put("https://ms.vipstatic.com/vtm/vtm_config_res/prod/1440739530222_js_core.js",
-				pathPrefix + "1440739530222_js_core.js");
-		jsMappings.put("https://ms.vipstatic.com/vtm/vtm_config_res/prod/1440739651257_js_core.js",
-				pathPrefix + "1440739651257_js_core.js");
-		jsMappings.put("https://ms.vipstatic.com/vtm/vtm_config_res/prod/1443422475906_js_core.js",
-				pathPrefix + "1443422475906_js_core.js");
+		jsMappings.put("https://ms.vipstatic.com/vtm/vtm_config_res/prod/1428025414396_js_core.js",pathPrefix + "1428025414396_js_core.js");
+		jsMappings.put("https://ms.vipstatic.com/vtm/vtm_config_res/prod/1440739530222_js_core.js",pathPrefix + "1440739530222_js_core.js");
+		jsMappings.put("https://ms.vipstatic.com/vtm/vtm_config_res/prod/1440739651257_js_core.js",pathPrefix + "1440739651257_js_core.js");
+		jsMappings.put("https://ms.vipstatic.com/vtm/vtm_config_res/prod/1443422475906_js_core.js",pathPrefix + "1443422475906_js_core.js");
 		jsMappings.put("https://ms.vipstatic.com/vtm/vtm_config_res/prod/1443422475906_js_core.js",
 				pathPrefix + "1443422475906_js_core.js");
 		jsMappings.put("https://ms.vipstatic.com/vtm/vtm_config_res/prod/1447035324925_js_core.js",
@@ -151,7 +143,6 @@ public class Vip {
 		try {
 			for (Map.Entry<String, String> entry : jsMappings.entrySet()) {
 				File jsFile = ResourceUtils.getFile(entry.getValue());
-
 				javascripts.put(entry.getKey(), FileUtils.readFileToString(jsFile, "utf-8"));
 			}
 		} catch (Exception ex) {

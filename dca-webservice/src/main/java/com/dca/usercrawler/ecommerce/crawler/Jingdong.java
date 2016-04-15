@@ -300,8 +300,6 @@ public class Jingdong extends BaseEcommerceSimpleCrawler {
 		// 个人信息 http://i.jd.com/user/info
 		Document doc = null;
 		String pageContent = null;
-		// String pageContent=client.getPage("http://i.jd.com/user/info");
-		// System.out.println(pageContent);
 
 		// 收货地址 http://easybuy.jd.com/address/getEasyBuyList.action
 		pageContent = client.getPage("http://easybuy.jd.com/address/getEasyBuyList.action");
@@ -327,6 +325,7 @@ public class Jingdong extends BaseEcommerceSimpleCrawler {
 		}
 
 		JSONObject data_json = new JSONObject();
+		data_json.put("type", "JD");
 		data_json.put("addressList", address_array);
 		System.out.println(data_json);
 		crawlerBuylist(client, data_json);

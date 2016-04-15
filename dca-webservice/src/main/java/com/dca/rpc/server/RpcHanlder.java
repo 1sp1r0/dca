@@ -27,33 +27,37 @@ public class RpcHanlder {
 		return "ok";
 	}
 
+	//杭州公积金
 	@Test
 	public void testProvidentFund(){
 		crawl(2, 2, "082829007900", "435582","provident_fund","杭州");
 	}
 	
+	//京东
 	@Test
 	public void testEcommerce_jd(){
 		crawl(1, 1, "","","e_commerce","京东");
 	}
 	
+	//淘宝
 	@Test
 	public void testEcommerce_tb(){
 		crawl(1, 3, "","","e_commerce","淘宝");
 	}
 
-	
+	//唯品会
 	@Test
 	public void testEcommerce_vip(){
-		crawl(1, 3, "","","e_commerce","唯品会");
+		crawl(1, 3, "15088777366","fangxiao19900916","e_commerce","唯品会");
 	}
 	
+	//杭州社保
 	@Test
 	public void testSocial_Insurance(){
 		crawl(1, 4, "339005198712106210","xiaolan890310","social_insurance","杭州");
 	}
 	
 	public static void main(String[] args) {
-		new RpcHanlder().crawl(1, 4, "339005198712106210","xiaolan890310","social_insurance","杭州");
+		new RpcHanlder().crawl(1, 3, "15088777366","fangxiao19900916","e_commerce","唯品会");
 	}
 }

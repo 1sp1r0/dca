@@ -184,6 +184,7 @@ public class Taobao extends BaseEcommerceComplexCrawler {
 	protected ResultData crawlAccountData(Account account, LoginData loginData, WebClient client) throws Exception {
 		// https://member1.taobao.com/member/fresh/deliver_address.htm
 		JSONObject data_json = new JSONObject();
+		data_json.put("type", "TB");
 		HtmlPage addressPage = client.getPage("https://member1.taobao.com/member/fresh/deliver_address.htm");
 		Document doc = Jsoup.parse(addressPage.asXml());
 		Elements addElements = doc.select("div.tbl-deliver-address table.tbl-main tr");
