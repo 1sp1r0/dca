@@ -1,2 +1,0 @@
-var VTM_SRC="http://ms.vipstatic.com/vtm/vtm_config_res/prod/vtm.js";var TAN_SUO_HAO="http://3rd.vipstatic.com/mars/mars.js";$.Loader.advScript({name:"tansuohao",url:TAN_SUO_HAO});window.share=function(){var SHARE="http://share.vip.com/themes/default/static/widget/assets/js/dest/app/share/share.js";$.Loader.advScript({name:"sharejs",url:SHARE+"?v="+VIPSHOP.jsVer})};var urlQuery=VIPSHOP.queryStringToJSON();var previewFix=urlQuery.preview?"?preview=1":"";$.Loader.advScript({name:"vtm",url:VTM_SRC+previewFix});
-$.Listeners.pub("inf.loaded").success();

@@ -14,10 +14,10 @@ import com.dca.common.LoginData;
 import com.dca.dto.Account;
 import com.dca.dto.CrawlData;
 import com.dca.usercrawler.Crawler;
-import com.dca.usercrawler.util.BaseFactory;
-import com.dca.usercrawler.util.CrawlerFactory;
-import com.dca.usercrawler.util.EnumHelper;
-import com.dca.usercrawler.util.TaskEnum;
+import com.dca.usercrawler.helpers.BaseFactory;
+import com.dca.usercrawler.helpers.CrawlerFactory;
+import com.dca.usercrawler.helpers.EnumHelper;
+import com.dca.usercrawler.helpers.TaskEnum;
 
 @Service("crawlerWebservice")
 public class BaseCrawlerServiceImpl implements NewsCrawlerService {
@@ -32,7 +32,7 @@ public class BaseCrawlerServiceImpl implements NewsCrawlerService {
 	static HashMap<String,String> resourceShortMap=new HashMap<String,String>();
 	static{
 		resourceShortMap.put("provident_fund", "PFD");
-		resourceShortMap.put("social", "SIS");
+		resourceShortMap.put("social_insurance", "SIS");
 		resourceShortMap.put("e_commerce", "ECE");
 	}
 	

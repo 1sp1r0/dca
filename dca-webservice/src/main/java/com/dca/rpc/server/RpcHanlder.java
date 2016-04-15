@@ -1,6 +1,5 @@
 package com.dca.rpc.server;
 
-import org.apache.commons.codec.binary.Base64;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,15 +34,26 @@ public class RpcHanlder {
 	
 	@Test
 	public void testEcommerce_jd(){
-		crawl(1, 1, new String(Base64.decodeBase64("OTkyMzkxMzU3QHFxLmNvbQ==".getBytes())),new String(Base64.decodeBase64("eWFuZzEyNTg=".getBytes())),"e_commerce","京东");
+		crawl(1, 1, "","","e_commerce","京东");
 	}
 	
 	@Test
 	public void testEcommerce_tb(){
-		crawl(1, 3, "15802489620","yang1258.","e_commerce","淘宝");
+		crawl(1, 3, "","","e_commerce","淘宝");
+	}
+
+	
+	@Test
+	public void testEcommerce_vip(){
+		crawl(1, 3, "","","e_commerce","唯品会");
+	}
+	
+	@Test
+	public void testSocial_Insurance(){
+		crawl(1, 4, "339005198712106210","xiaolan890310","social_insurance","杭州");
 	}
 	
 	public static void main(String[] args) {
-		new RpcHanlder().crawl(1, 3, "15802489620","yang1258.","e_commerce","淘宝");
+		new RpcHanlder().crawl(1, 4, "339005198712106210","xiaolan890310","social_insurance","杭州");
 	}
 }

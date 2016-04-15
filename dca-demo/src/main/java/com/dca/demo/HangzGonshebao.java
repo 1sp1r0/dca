@@ -153,7 +153,7 @@ public class HangzGonshebao {
 	
 	
 	public static void main(String[] args) {
-		
+		System.out.println("http://www.zjhz.lss.gov.cn/html/wsbs/denglu.html?error=null&username=339005198712106210&amp;app=index".indexOf("html?error=null"));
 		HangzGonshebao engine = new HangzGonshebao("339005198712106210","xiaolan890310");
 		try {
 			engine.doGetCookie();
